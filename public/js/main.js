@@ -5,7 +5,6 @@ const userList = document.getElementById('users');
 
 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-
 // Get username and room from URL
 const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true
@@ -14,17 +13,16 @@ const { username, room } = Qs.parse(location.search, {
 const socket = io();
 
 // Join chatroom
-socket.emit('joinRoom', { username, room, timeZone });
+socket.emit('joinRoom', { username, room });
 
 // Get room and users
-socket.on('roomUsers', ({ room, users, timeZone }) => {
+socket.on('roomUsers', ({ room, users }) => {
   outputRoomName(room);
   outputUsers(users);
 });
 
 // Message from server
 socket.on('message', message => {
-  console.log(message);
   outputMessage(message);
 
   // Scroll down
@@ -39,7 +37,7 @@ chatForm.addEventListener('submit', e => {
   const msg = e.target.elements.msg.value;
 
   // Emit message to server
-  socket.emit('chatMessage', msg, timeZone);
+  socket.emit('chatMessage', msg);
 
   // Clear input
   e.target.elements.msg.value = '';
@@ -48,9 +46,11 @@ chatForm.addEventListener('submit', e => {
 
 // Output message to DOM
 function outputMessage(message) {
+  const time = moment(message.time).utcOffset(timeZone).format('h:mm a')
+
   const div = document.createElement('div');
   div.classList.add('message');
-  div.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span></p>
+  div.innerHTML = `<p class="meta">${message.username} <span>${time}</span></p>
   <p class="text">
     ${message.text}
   </p>`;
