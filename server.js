@@ -21,20 +21,20 @@ const botName = 'Bot';
 
 // Run when client connects
 io.on('connection', socket => {
-  socket.on('joinRoom', ({ username, room }) => {
+  socket.on('joinRoom', ({ username, room, timeZone }) => {
     const user = userJoin(socket.id, username, room);
 
     socket.join(user.room);
 
     // Welcome current user
-    socket.emit('message', formatMessage(botName, 'Welcome to Real Time Chat!'));
+    socket.emit('message', formatMessage(botName, 'Welcome to Real Time Chat!', timeZone));
 
     // Broadcast when a user connects
     socket.broadcast
       .to(user.room)
       .emit(
         'message',
-        formatMessage(botName, `${user.username} has joined the chat`)
+        formatMessage(botName, `${user.username} has joined the chat`, timeZone)
       );
 
     // Send users and room info
@@ -45,10 +45,10 @@ io.on('connection', socket => {
   });
 
   // Listen for chatMessage
-  socket.on('chatMessage', msg => {
+  socket.on('chatMessage', (msg, timeZone) => {
     const user = getCurrentUser(socket.id);
 
-    io.to(user.room).emit('message', formatMessage(user.username, msg));
+    io.to(user.room).emit('message', formatMessage(user.username, msg, timeZone));
   });
 
   // Runs when client disconnects
@@ -58,7 +58,7 @@ io.on('connection', socket => {
     if (user) {
       io.to(user.room).emit(
         'message',
-        formatMessage(botName, `${user.username} has left the chat`)
+        formatMessage(botName, `${user.username} has left the chat`, timeZone)
       );
 
       // Send users and room info

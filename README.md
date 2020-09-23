@@ -10,7 +10,14 @@ Go to localhost:3000
 
 ```
 
-# Project Hosted At :
-https://secure-headland-07810.herokuapp.com/
+## Project Hosted At :
+https://real-time--chat.herokuapp.com
+
+
+## Authors
+
+This project was part of youtube video : Realtime Chat With Users & Rooms
+
+By : brad traversy
 
 
